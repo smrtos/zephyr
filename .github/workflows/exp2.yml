@@ -46,6 +46,7 @@ jobs:
         # Set continue-on-error to true so the steps that follow will not be cancelled.
         continue-on-error: true 
         run: |
+          set -x
           echo [step 1] & date
           rm -fr $GITHUB_WORKSPACE/zephyrproject
           mkdir -p $GITHUB_WORKSPACE/zephyrproject
