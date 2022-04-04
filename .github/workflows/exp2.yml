@@ -56,7 +56,7 @@ jobs:
           cd zephyr          
           source ./zephyr-env.sh
           echo [step 7] & date
-          ./scripts/twister --device-testing --device-serial /dev/ttyACM0 --device-serial-baud 115200 -p reel_board -T tests/
+          ./scripts/twister --device-testing --device-serial /dev/ttyACM0 --device-serial-baud 115200 -p reel_board -T tests/kernel/fifo
           echo [done] & date
           
          
