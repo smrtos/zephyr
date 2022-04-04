@@ -39,7 +39,7 @@ jobs:
           echo GITHUB_WORKSPACE: $GITHUB_WORKSPACE
       - name: Run twister
         run: |
-          mkdir -P $GITHUB_WORKSPACE/zephyrproject
+          mkdir -p $GITHUB_WORKSPACE/zephyrproject
           cd $GITHUB_WORKSPACE/zephyrproject
           pwd
           git pull https://github.com/smrtos/zephyr.git
