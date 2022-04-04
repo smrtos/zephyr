@@ -25,7 +25,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
         with:
-          path: $GITJUB_WORKSPACE/_work/zephyrproject/zephyr
+          path: $GITHUB_WORKSPACE/_work/zephyrproject/zephyr
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -36,10 +36,10 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
-          echo GITJUB_WORKSPACE: $GITJUB_WORKSPACE
+          echo GITHUB_WORKSPACE: $GITHUB_WORKSPACE
       - name: Run twister
         run: |
-          cd $GITJUB_WORKSPACE/_work/zephyrproject/zephyr
+          cd $GITHUB_WORKSPACE/_work/zephyrproject/zephyr
           pwd
          
           
