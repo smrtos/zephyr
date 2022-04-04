@@ -43,9 +43,10 @@ jobs:
           cd $GITHUB_WORKSPACE/zephyrproject
           west init -m https://github.com/zephyrproject-rtos/zephyr
           west update
-          cd zephyr
+          west zephyr-export
+          cd zephyr          
           source ./zephyr-env.sh
-          
+          ./scripts/twister --device-testing --device-serial /dev/ttyACM0 --device-serial-baud 115200 -p reel_board -T tests/
           
          
           
