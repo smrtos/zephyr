@@ -23,9 +23,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-        with:
-          path: $GITHUB_WORKSPACE/_work/zephyrproject/zephyr
+      #- uses: actions/checkout@v3
+      #  with:
+      #    path: $GITHUB_WORKSPACE/
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -39,8 +39,11 @@ jobs:
           echo GITHUB_WORKSPACE: $GITHUB_WORKSPACE
       - name: Run twister
         run: |
-          cd $GITHUB_WORKSPACE/_work/zephyrproject/zephyr
+          mkdir -P $GITHUB_WORKSPACE/zephyrproject
+          cd $GITHUB_WORKSPACE/zephyrproject
           pwd
+          git pull https://github.com/smrtos/zephyr.git
+          
          
           
           
