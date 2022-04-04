@@ -52,16 +52,15 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/zephyrproject
           echo [step 2] & date
           cd $GITHUB_WORKSPACE/zephyrproject
-          echo [step 3] & date
           west init -m https://github.com/zephyrproject-rtos/zephyr
-          echo [step 4] & date
+          echo [step 3] & date
           west update
-          echo [step 5] & date
+          echo [step 4] & date
           west zephyr-export
-          echo [step 6] & date
+          echo [step 5] & date
           cd zephyr          
           source ./zephyr-env.sh
-          echo [step 7] & date
+          echo [step 6] & date
           echo use "|| true" below to ensure below step always exit 0. So commands that follow will not be cancelled.
           ./scripts/twister -x=CONFIG_BOOT_DELAY=500 --device-testing --device-serial /dev/ttyACM0 --device-serial-baud 115200 -p reel_board -T tests/kernel/mutex/mutex_api || true
           echo [done] & date
