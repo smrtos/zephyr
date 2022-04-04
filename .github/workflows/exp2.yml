@@ -42,7 +42,7 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/zephyrproject
           cd $GITHUB_WORKSPACE/zephyrproject
           pwd
-          git pull https://github.com/smrtos/zephyr.git
+          git clone https://github.com/smrtos/zephyr.git
           
          
           
