@@ -40,6 +40,7 @@ jobs:
           echo [step 0] & date
           
       - name: Run twister
+        continue-on-error: true # twister will return status code 1 when case failed
         run: |
           echo [step 1] & date
           rm -fr $GITHUB_WORKSPACE/zephyrproject
