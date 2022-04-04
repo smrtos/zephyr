@@ -41,8 +41,11 @@ jobs:
         run: |
           mkdir -p $GITHUB_WORKSPACE/zephyrproject
           cd $GITHUB_WORKSPACE/zephyrproject
-          pwd
-          git clone https://github.com/smrtos/zephyr.git
+          west init -m https://github.com/zephyrproject-rtos/zephyr
+          west update
+          cd zephyr
+          source ./zephyr-env.sh
+          
           
          
           
