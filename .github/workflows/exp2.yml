@@ -40,7 +40,9 @@ jobs:
           echo [step 0] & date
           
       - name: Run twister
-        continue-on-error: true # twister will return status code 1 when case failed
+        # twister will return status code 1 when case failed
+        # Set continue-on-error to true so the steps that follow will not be cancelled.
+        continue-on-error: true 
         run: |
           echo [step 1] & date
           rm -fr $GITHUB_WORKSPACE/zephyrproject
@@ -57,7 +59,8 @@ jobs:
           cd zephyr          
           source ./zephyr-env.sh
           echo [step 7] & date
-          ./scripts/twister -x=CONFIG_BOOT_DELAY=500 --device-testing --device-serial /dev/ttyACM0 --device-serial-baud 115200 -p reel_board -T tests/kernel/fifo/fifo_api
+          echo use "|| true" below to ensure below step always exit 0. So commands that follow will not be cancelled.
+          ./scripts/twister -x=CONFIG_BOOT_DELAY=500 --device-testing --device-serial /dev/ttyACM0 --device-serial-baud 115200 -p reel_board -T tests/kernel/fifo/fifo_api || true
           echo [done] & date
           
          
