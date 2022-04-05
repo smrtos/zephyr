@@ -70,7 +70,7 @@ jobs:
     runs-on: [self-hosted, ming-nuc01]
     steps:
         - name: run on another board
-        - run: |
+          run: |
             echo "running test on another board"
          
   # sending email
@@ -79,7 +79,7 @@ jobs:
     needs: [twister-run-reelboard, twister-run-another-board]
     steps:
       - name: sending email
-      - run: |
+        run: |
           echo "sending email"
           
           
