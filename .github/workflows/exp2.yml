@@ -17,8 +17,9 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "twister-run"
-  twister-run:
+  # This workflow contains multiple "twister-run-xxx" jobs.
+  # Each runs on one platform.
+  twister-run-reelboard:
     # The type of runner that the job will run on
     runs-on: [self-hosted, ming-nuc01]
 
@@ -31,7 +32,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
-        run: echo Hello, world!
+        run: echo Twister run on reel board!
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
@@ -62,11 +63,24 @@ jobs:
           source ./zephyr-env.sh
           echo [step 6] & date
           echo use "|| true" below to ensure below step always exit 0. So commands that follow will not be cancelled.
-          ./scripts/twister -x=CONFIG_BOOT_DELAY=500 --device-testing --device-serial /dev/ttyACM0 --device-serial-baud 115200 -p reel_board -T tests/kernel/mutex/mutex_api || true
+          ./scripts/twister -x=CONFIG_BOOT_DELAY=500 --device-testing --device-serial /dev/ttyACM0 --device-serial-baud 115200 -p reel_board -T tests/kernel/pipe/pipe_api || true
           echo [done] & date
-          
+  
+  twister-run-another-board:
+    runs-on: [self-hosted, ming-nuc01]
+    steps:
+        - name: run on another board
+        - run: |
+            echo "running test on another board"
          
-          
+  # sending email
+  email-job:
+    runs-on: [self-hosted, ming-nuc01]
+    needs: [twister-run-reelboard, twister-run-another-board]
+    steps:
+      - name: sending email
+      - run: |
+          echo "sending email"
           
           
           
