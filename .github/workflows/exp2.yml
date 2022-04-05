@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Shanghai local runner experiment manual trigger
+name: Shanghai self-hosted runner experiment
 
 # Controls when the workflow will run
 on:
