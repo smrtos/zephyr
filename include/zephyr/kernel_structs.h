@@ -126,6 +126,10 @@ struct _cpu {
 
 	uint8_t id;
 
+#if defined(CONFIG_FPU_SHARING)
+	void *fp_ctx;
+#endif
+
 #ifdef CONFIG_SMP
 	/* True when _current is allowed to context switch */
 	uint8_t swap_ok;
@@ -182,6 +186,11 @@ struct z_kernel {
 
 #if defined(CONFIG_THREAD_MONITOR)
 	struct k_thread *threads; /* singly linked list of ALL threads */
+#endif
+
+#if defined(CONFIG_SMP) && defined(CONFIG_SCHED_IPI_SUPPORTED)
+	/* Need to signal an IPI at the next scheduling point */
+	bool pending_ipi;
 #endif
 };
 

@@ -41,9 +41,6 @@
 #define LOG_MODULE_NAME bt_mcc
 #include "common/log.h"
 
-#define FIRST_HANDLE			0x0001
-#define LAST_HANDLE			0xFFFF
-
 struct mcs_instance_t {
 	uint16_t start_handle;
 	uint16_t end_handle;
@@ -911,6 +908,10 @@ static uint8_t mcs_notify_handler(struct bt_conn *conn,
 {
 	uint16_t handle = params->value_handle;
 
+	if (conn == NULL) {
+		return BT_GATT_ITER_CONTINUE;
+	}
+
 	BT_DBG("Notification, handle: %d", handle);
 
 	if (data) {
@@ -1490,8 +1491,8 @@ int bt_mcc_discover_mcs(struct bt_conn *conn, bool subscribe)
 	discover_params.func = discover_primary_func;
 	discover_params.uuid = &uuid.uuid;
 	discover_params.type = BT_GATT_DISCOVER_PRIMARY;
-	discover_params.start_handle = FIRST_HANDLE;
-	discover_params.end_handle = LAST_HANDLE;
+	discover_params.start_handle = BT_ATT_FIRST_ATTRIBUTE_HANDLE;
+	discover_params.end_handle = BT_ATT_LAST_ATTRIBUTE_HANDLE;
 
 	BT_DBG("start discovery of GMCS primary service");
 	return bt_gatt_discover(conn, &discover_params);
