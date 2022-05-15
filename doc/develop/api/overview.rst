@@ -50,7 +50,7 @@ current :ref:`stability level <api_lifecycle>`.
    * - :ref:`can_api`
      - Unstable
      - 1.14
-     - 3.0
+     - 3.1
 
    * - :ref:`counter_api`
      - Unstable
@@ -221,6 +221,11 @@ current :ref:`stability level <api_lifecycle>`.
      - Unstable
      - 1.14
      - 2.4
+
+   * - :ref:`mipi_dsi_api`
+     - Experimental
+     - 3.1
+     - 3.1
 
    * - :ref:`misc_api`
      - Stable

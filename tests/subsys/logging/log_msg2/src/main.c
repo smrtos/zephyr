@@ -9,15 +9,15 @@
  * @brief Test log message
  */
 
-#include <logging/log_msg2.h>
-#include <logging/log_internal.h>
-#include <logging/log_ctrl.h>
+#include <zephyr/logging/log_msg2.h>
+#include <zephyr/logging/log_internal.h>
+#include <zephyr/logging/log_ctrl.h>
 
 #include <tc_util.h>
 #include <stdbool.h>
-#include <zephyr.h>
+#include <zephyr/zephyr.h>
 #include <ztest.h>
-#include <sys/cbprintf.h>
+#include <zephyr/sys/cbprintf.h>
 
 #if CONFIG_NO_OPTIMIZATIONS
 #define EXP_MODE(name) Z_LOG_MSG2_MODE_RUNTIME
@@ -561,6 +561,7 @@ void test_main(void)
 		ztest_unit_test(test_mode_size_plain_string),
 		ztest_unit_test(test_mode_size_data_only),
 		ztest_unit_test(test_mode_size_plain_str_data),
+		ztest_unit_test(test_mode_size_str_with_strings),
 		ztest_unit_test(test_mode_size_str_with_2strings),
 		ztest_unit_test(test_saturate)
 		);

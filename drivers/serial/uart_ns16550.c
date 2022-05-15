@@ -24,18 +24,18 @@
  */
 
 #include <errno.h>
-#include <kernel.h>
-#include <arch/cpu.h>
+#include <zephyr/kernel.h>
+#include <zephyr/arch/cpu.h>
 #include <zephyr/types.h>
 #include <soc.h>
 
-#include <init.h>
-#include <toolchain.h>
-#include <linker/sections.h>
-#include <drivers/uart.h>
-#include <pm/policy.h>
-#include <sys/sys_io.h>
-#include <spinlock.h>
+#include <zephyr/init.h>
+#include <zephyr/toolchain.h>
+#include <zephyr/linker/sections.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/pm/policy.h>
+#include <zephyr/sys/sys_io.h>
+#include <zephyr/spinlock.h>
 
 #include "uart_ns16550.h"
 
@@ -53,7 +53,7 @@
 
 #if DT_ANY_INST_ON_BUS_STATUS_OKAY(pcie)
 BUILD_ASSERT(IS_ENABLED(CONFIG_PCIE), "NS16550(s) in DT need CONFIG_PCIE");
-#include <drivers/pcie/pcie.h>
+#include <zephyr/drivers/pcie/pcie.h>
 #endif
 
 /* register definitions */
@@ -89,6 +89,7 @@ BUILD_ASSERT(IS_ENABLED(CONFIG_PCIE), "NS16550(s) in DT need CONFIG_PCIE");
 #define IIR_MASK  0x07 /* interrupt id bits mask  */
 #define IIR_ID    0x06 /* interrupt ID mask without NIP */
 #define IIR_FE    0xC0 /* FIFO mode enabled */
+#define IIR_CH    0x0C /* Character timeout*/
 
 /* equates for FIFO control register */
 
@@ -447,7 +448,7 @@ static int uart_ns16550_configure(const struct device *dev,
 		uart_cfg.data_bits | uart_cfg.stop_bits | uart_cfg.parity);
 
 	mdc = MCR_OUT2 | MCR_RTS | MCR_DTR;
-#ifdef CONFIG_UART_NS16750
+#if defined(CONFIG_UART_NS16750) || defined(CONFIG_UART_NS16950)
 	if (cfg->flow_ctrl == UART_CFG_FLOW_CTRL_RTS_CTS) {
 		mdc |= MCR_AFCE;
 	}
@@ -470,6 +471,8 @@ static int uart_ns16550_configure(const struct device *dev,
 	if ((INBYTE(IIR(dev)) & IIR_FE) == IIR_FE) {
 #ifdef CONFIG_UART_NS16750
 		dev_data->fifo_size = 64;
+#elif defined(CONFIG_UART_NS16950)
+		dev_data->fifo_size = 128;
 #else
 		dev_data->fifo_size = 16;
 #endif

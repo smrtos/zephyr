@@ -19,6 +19,15 @@ API Changes
 Changes in this release
 =======================
 
+* All Zephyr public headers have been moved to ``include/zephyr``, meaning they
+  need to be prefixed with ``<zephyr/...>`` when included. Because this change
+  can potentially break many applications or libraries,
+  :kconfig:option:`CONFIG_LEGACY_INCLUDE_PATH` is provided to allow using the
+  old include path. This option is now enabled by default to allow a smooth
+  transition. In order to facilitate the migration to the new include prefix, a
+  script to automate the process is also provided:
+  :zephyr_file:`scripts/utils/migrate_includes.py`.
+
 * LoRaWAN: The message type parameter in :c:func:`lorawan_send` was changed
   from ``uint8_t`` to ``enum lorawan_message_type``. If ``0`` was passed for
   unconfirmed message, this has to be changed to ``LORAWAN_MSG_UNCONFIRMED``.
@@ -26,6 +35,41 @@ Changes in this release
 * Disk Subsystem: SPI mode SD cards now use the SD subsystem to communicate
   with SD cards. See :ref:`the disk access api <disk_access_api>` for an
   example of the new devicetree binding format required.
+
+* CAN
+
+  * Added ``const struct device`` parameter to the following CAN callback function signatures:
+
+    * ``can_tx_callback_t``
+    * ``can_rx_callback_t``
+    * ``can_state_change_callback_t``
+
+  * Allow calling the following CAN API functions from userspace:
+
+    * :c:func:`can_set_mode()`
+    * :c:func:`can_calc_timing()`
+    * :c:func:`can_calc_timing_data()`
+    * :c:func:`can_set_bitrate()`
+    * :c:func:`can_get_max_filters()`
+
+  * Changed :c:func:`can_set_bitrate()` to use a sample point of 75.0% for bitrates over 800 kbit/s,
+    80.0% for bitrates over 500 kbit/s, and 87.5% for all other bitrates.
+
+  * Split CAN classic and CAN-FD APIs:
+
+    * :c:func:`can_set_timing()` split into :c:func:`can_set_timing()` and
+      :c:func:`can_set_timing_data()`.
+    * :c:func:`can_set_bitrate()` split into :c:func:`can_set_bitrate()` and
+      :c:func:`can_set_bitrate_data()`.
+
+  * Converted the ``enum can_mode`` into a ``can_mode_t`` bitfield and renamed the CAN mode
+    definitions:
+
+    * ``CAN_NORMAL_MODE`` renamed to :c:macro:`CAN_MODE_NORMAL`.
+    * ``CAN_SILENT_MODE`` renamed to :c:macro:`CAN_MODE_LISTENONLY`.
+    * ``CAN_LOOPBACK_MODE`` renamed to :c:macro:`CAN_MODE_LOOPBACK`.
+    * The previous ``CAN_SILENT_LOOPBACK_MODE`` can be set using the bitmask ``(CAN_MODE_LISTENONLY |
+      CAN_MODE_LOOPBACK)``.
 
 Removed APIs in this release
 ============================
@@ -39,6 +83,19 @@ Removed APIs in this release
   * ``CONFIG_GPIO_STM32_SWJ_NONJTRST``
   * ``CONFIG_GPIO_STM32_SWJ_NOJTAG``
   * ``CONFIG_GPIO_STM32_SWJ_DISABLE``
+
+* Removed experimental 6LoCAN protocol support.
+
+* Removed the following deprecated CAN APIs:
+
+  * Custom CAN error codes
+  * ``can_configure()``
+  * ``can_attach_workq()``
+  * ``can_attach_isr()``
+  * ``can_attach_msgq()``
+  * ``can_detach()``
+  * ``can_register_state_change_isr()``
+  * ``can_write()``
 
 Deprecated in this release
 ==========================
@@ -90,6 +147,22 @@ New APIs in this release
 * SDHC API
 
   * Added the :ref:`SDHC api <sdhc_api>`, used to interact with SD host controllers.
+
+* MIPI-DSI
+
+  * Added a :ref:`MIPI-DSI api <mipi_dsi_api>`. This is an experimental API,
+    some of the features/APIs will be implemented later.
+
+* CAN
+
+  * Added support for getting the minimum/maximum supported CAN timing parameters:
+
+    * :c:func:`can_get_timing_min()`
+    * :c:func:`can_get_timing_max()`
+    * :c:func:`can_get_timing_data_min()`
+    * :c:func:`can_get_timing_data_max()`
+
+  * Added support for enabling/disabling CAN-FD mode at runtime using :c:macro:`CAN_MODE_FD`.
 
 Kernel
 ******
@@ -152,6 +225,15 @@ Drivers and Sensors
 * ADC
 
 * CAN
+
+  * Switched from transmitting CAN frames in FIFO/chronological order to transmitting according to
+    CAN-ID priority (NXP FlexCAN, ST STM32 bxCAN, Bosch M_CAN, Microchip MCP2515).
+  * Added support for ST STM32U5 to the ST STM32 FDCAN driver.
+  * Renamed the base Bosch M_CAN devicetree binding compatible from ``bosch,m-can-base`` to
+    :dtcompatible:`bosch,m_can-base`.
+  * Added CAN controller statistics support (NXP FlexCAN, Renesas R-Car, ST STM32 bxCAN).
+  * Added CAN transceiver support.
+  * Added generic SocketCAN network interface and removed driver-specific implementations.
 
 * Counter
 
@@ -237,6 +319,14 @@ Libraries / Subsystems
 
   * Added mcumgr os hook to allow an application to accept or decline a reset
     request; :kconfig:option:`CONFIG_OS_MGMT_RESET_HOOK` enables the callback.
+  * Added mcumgr fs hook to allow an application to accept or decline a file
+    read/write request; :kconfig:option:`CONFIG_FS_MGMT_FILE_ACCESS_HOOK`
+    enables the feature which then needs to be registered by the application.
+  * Added supplied image header to mcumgr img upload callback parameter list
+    which allows the application to inspect it to determine if it should be
+    allowed or declined.
+  * Made the img mgmt ``img_mgmt_vercmp`` function public to allow application-
+    level comparison of image versions.
 
 * SD Subsystem
 

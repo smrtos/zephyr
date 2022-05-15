@@ -6,13 +6,13 @@
 #ifndef ZEPHYR_INCLUDE_LOGGING_LOG_MSG2_H_
 #define ZEPHYR_INCLUDE_LOGGING_LOG_MSG2_H_
 
-#include <logging/log_instance.h>
-#include <sys/mpsc_packet.h>
-#include <sys/cbprintf.h>
-#include <sys/atomic.h>
-#include <sys/util.h>
+#include <zephyr/logging/log_instance.h>
+#include <zephyr/sys/mpsc_packet.h>
+#include <zephyr/sys/cbprintf.h>
+#include <zephyr/sys/atomic.h>
+#include <zephyr/sys/util.h>
 #include <string.h>
-#include <toolchain.h>
+#include <zephyr/toolchain.h>
 
 #ifdef __GNUC__
 #ifndef alloca
@@ -465,6 +465,8 @@ __syscall void z_log_msg2_static_create(const void *source,
  *
  * @param dlen Data length.
  *
+ * @param package_flags Package flags.
+ *
  * @param fmt String.
  *
  * @param ap Variable list of string arguments.
@@ -489,6 +491,8 @@ __syscall void z_log_msg2_runtime_vcreate(uint8_t domain_id, const void *source,
  * @param data Data.
  *
  * @param dlen Data length.
+ *
+ * @param package_flags Package flags.
  *
  * @param fmt String.
  *

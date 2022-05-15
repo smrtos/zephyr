@@ -6,12 +6,12 @@
 
 #include <ztest.h>
 #include <stdio.h>
-#include <app_memory/app_memdomain.h>
+#include <zephyr/app_memory/app_memdomain.h>
 #ifdef CONFIG_USERSPACE
-#include <sys/libc-hooks.h>
+#include <zephyr/sys/libc-hooks.h>
 #endif
-#include <sys/reboot.h>
-#include <logging/log_ctrl.h>
+#include <zephyr/sys/reboot.h>
+#include <zephyr/logging/log_ctrl.h>
 
 #ifdef KERNEL
 static struct k_thread ztest_thread;
@@ -269,7 +269,7 @@ static void init_testing(void)
 	signal(SIGSEGV, handle_signal);
 
 	if (setjmp(stack_fail)) {
-		PRINT("Test suite crashed.");
+		PRINT("TESTSUITE crashed.");
 		exit(1);
 	}
 }

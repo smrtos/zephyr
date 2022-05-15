@@ -9,8 +9,8 @@
 #define ZEPHYR_INCLUDE_SETTINGS_SETTINGS_H_
 
 #include <sys/types.h>
-#include <sys/util.h>
-#include <sys/slist.h>
+#include <zephyr/sys/util.h>
+#include <zephyr/sys/slist.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -125,7 +125,7 @@ struct settings_handler {
 /**
  * @struct settings_handler_static
  * Config handlers without the node element, used for static handlers.
- * These are registered using a call to SETTINGS_REGISTER_STATIC().
+ * These are registered using a call to SETTINGS_STATIC_HANDLER_DEFINE().
  */
 struct settings_handler_static {
 

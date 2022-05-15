@@ -18,7 +18,7 @@
 #if defined(CONFIG_CPU_CORTEX_M)
 #include <zephyr/devicetree.h>
 
-#include <arch/arm/aarch32/cortex_m/nvic.h>
+#include <zephyr/arch/arm/aarch32/cortex_m/nvic.h>
 
 /* for assembler, only works with constants */
 #define Z_EXC_PRIO(pri) (((pri) << (8 - NUM_IRQ_PRIO_BITS)) & 0xff)
@@ -49,7 +49,8 @@
 
 #define _EXC_FAULT_PRIO 0
 #define _EXC_ZERO_LATENCY_IRQS_PRIO 0
-#define _EXC_SVC_PRIO COND_CODE_1(CONFIG_ZERO_LATENCY_IRQS, (1), (0))
+#define _EXC_SVC_PRIO COND_CODE_1(CONFIG_ZERO_LATENCY_IRQS,		\
+				  (CONFIG_ZERO_LATENCY_LEVELS), (0))
 #define _IRQ_PRIO_OFFSET (_EXCEPTION_RESERVED_PRIO + _EXC_SVC_PRIO)
 #define IRQ_PRIO_LOWEST (BIT(NUM_IRQ_PRIO_BITS) - (_IRQ_PRIO_OFFSET) - 1)
 

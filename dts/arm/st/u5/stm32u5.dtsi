@@ -7,9 +7,10 @@
 
 
 #include <arm/armv8-m.dtsi>
-#include <dt-bindings/clock/stm32u5_clock.h>
-#include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/i2c/i2c.h>
+#include <zephyr/dt-bindings/clock/stm32u5_clock.h>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include <zephyr/dt-bindings/i2c/i2c.h>
+#include <zephyr/dt-bindings/flash_controller/ospi.h>
 #include <freq.h>
 
 / {
@@ -56,6 +57,13 @@
 		};
 
 		clk_msis: clk-msis {
+			#clock-cells = <0>;
+			compatible = "st,stm32u5-msi-clock";
+			msi-range = <4>; /* 4MHz (reset value) */
+			status = "disabled";
+		};
+
+		clk_msik: clk-msik {
 			#clock-cells = <0>;
 			compatible = "st,stm32u5-msi-clock";
 			msi-range = <4>; /* 4MHz (reset value) */
@@ -348,6 +356,28 @@
 			label = "LPTIM_1";
 		};
 
+		octospi1: octospi@420d1400 {
+			compatible = "st,stm32-ospi";
+			reg = <0x420d1400 0x400>;
+			interrupts = <76 0>;
+			clocks = <&rcc STM32_CLOCK_BUS_AHB2_2 0x00000010>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+			label= "OCTOSPI1";
+		};
+
+		octospi2: octospi@420d2400 {
+			compatible = "st,stm32-ospi";
+			reg = <0x420d2400 0x400>;
+			interrupts = <120 0>;
+			clocks = <&rcc STM32_CLOCK_BUS_AHB2_2 0x00000100>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+			label= "OCTOSPI2";
+		};
+
 		rng: rng@420c0800 {
 			compatible = "st,stm32-rng";
 			reg = <0x420c0800 0x400>;
@@ -392,7 +422,7 @@
 		};
 
 		can {
-			compatible = "bosch,m-can-base";
+			compatible = "bosch,m_can-base";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			std-filter-elements = <28>;

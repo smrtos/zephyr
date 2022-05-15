@@ -5,13 +5,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <drivers/can.h>
-#include <drivers/pinctrl.h>
-#include <kernel.h>
+#include <zephyr/drivers/can.h>
+#include <zephyr/drivers/pinctrl.h>
+#include <zephyr/kernel.h>
 #include <soc.h>
 #include <stm32_ll_rcc.h>
 #include <stm32_ll_bus.h>
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 
 #include "can_mcan.h"
 
@@ -137,14 +137,15 @@ static const struct can_driver_api can_stm32fd_driver_api = {
 		.prescaler = 0x200
 	},
 #ifdef CONFIG_CAN_FD_MODE
-	.timing_min_data = {
+	.set_timing_data = can_mcan_set_timing_data,
+	.timing_data_min = {
 		.sjw = 0x01,
 		.prop_seg = 0x00,
 		.phase_seg1 = 0x01,
 		.phase_seg2 = 0x01,
 		.prescaler = 0x01
 	},
-	.timing_max_data = {
+	.timing_data_max = {
 		.sjw = 0x10,
 		.prop_seg = 0x00,
 		.phase_seg1 = 0x20,
