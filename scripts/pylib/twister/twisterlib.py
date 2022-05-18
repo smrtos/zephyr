@@ -718,9 +718,10 @@ class DeviceHandler(Handler):
                 serial_line = ser.readline()
             except TypeError:
                 pass
+            # ignore SerialException which may happen during the serial device
+            # power off/on process.
             except serial.SerialException:
-                ser.close()
-                break
+                pass
 
             # Just because ser_fileno has data doesn't mean an entire line
             # is available yet.
@@ -4639,7 +4640,7 @@ class HardwareMap:
             with open(hwm_file, 'r') as yaml_file:
                 hwm = yaml.load(yaml_file, Loader=SafeLoader)
                 if hwm:
-                    hwm.sort(key=lambda x: x.get('serial', ''))
+                    hwm.sort(key=lambda x: x.get('id', ''))
 
                     # disconnect everything
                     for h in hwm:
