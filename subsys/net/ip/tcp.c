@@ -238,7 +238,9 @@ static const char *tcp_flags(uint8_t flags)
 			len += snprintk(buf + len, BUF_SIZE - len, "URG,");
 		}
 
-		buf[len - 1] = '\0'; /* delete the last comma */
+		if (len > 0) {
+			buf[len - 1] = '\0'; /* delete the last comma */
+		}
 	}
 #undef BUF_SIZE
 	return buf;
@@ -976,7 +978,7 @@ static int tcp_pkt_peek(struct net_pkt *to, struct net_pkt *from, size_t pos,
 
 static bool tcp_window_full(struct tcp *conn)
 {
-	bool window_full = !(conn->unacked_len < conn->send_win);
+	bool window_full = (conn->send_data_total >= conn->send_win);
 
 	NET_DBG("conn: %p window_full=%hu", conn, window_full);
 
@@ -1004,10 +1006,9 @@ static int tcp_unsent_len(struct tcp *conn)
 static int tcp_send_data(struct tcp *conn)
 {
 	int ret = 0;
-	int pos, len;
+	int len;
 	struct net_pkt *pkt;
 
-	pos = conn->unacked_len;
 	len = MIN3(conn->send_data_total - conn->unacked_len,
 		   conn->send_win - conn->unacked_len,
 		   conn_mss(conn));
@@ -1024,7 +1025,7 @@ static int tcp_send_data(struct tcp *conn)
 		goto out;
 	}
 
-	ret = tcp_pkt_peek(pkt, conn->send_data, pos, len);
+	ret = tcp_pkt_peek(pkt, conn->send_data, conn->unacked_len, len);
 	if (ret < 0) {
 		tcp_pkt_unref(pkt);
 		ret = -ENOBUFS;

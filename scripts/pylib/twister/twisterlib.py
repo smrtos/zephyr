@@ -28,6 +28,7 @@ import xml.etree.ElementTree as ET
 import logging
 from pathlib import Path
 from distutils.spawn import find_executable
+import colorama
 from colorama import Fore
 import pickle
 import platform
@@ -4714,3 +4715,6 @@ class HardwareMap:
                 table.append([platform, p.id, p.serial])
 
         print(tabulate(table, headers=header, tablefmt="github"))
+
+def init(colorama_strip):
+    colorama.init(strip=colorama_strip)
