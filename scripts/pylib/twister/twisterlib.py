@@ -36,6 +36,7 @@ import yaml
 import json
 from multiprocessing import Lock, Process, Value
 from typing import List
+from subprocess import Popen, PIPE
 
 try:
     # Use the C LibYAML parser if available, rather than the Python parser.
@@ -2721,6 +2722,9 @@ class ProjectBuilder(FilterBuilder):
                     self.instance.add_missing_testscases("blocked", self.instance.reason)
                     pipeline.put({"op": "report", "test": self.instance})
                 else:
+                    # amend test plan
+                    logger.debug(f"amending testplan for {self.instance.name}")
+                    self.amend_testplan()
                     pipeline.put({"op": "gather_metrics", "test": self.instance})
 
         elif op == "gather_metrics":
@@ -2764,6 +2768,62 @@ class ProjectBuilder(FilterBuilder):
                 self.cleanup_device_testing_artifacts()
             else:
                 self.cleanup_artifacts()
+
+
+    def get_elf_symbols(self, elf_file):
+        process = Popen(["nm", elf_file], stdout=PIPE)
+        (output, err) = process.communicate()
+        process.wait()
+        output_str = str(output)
+        return output_str
+
+    def symbol_exists_in_elf(self, symbol_str, *symbol_names):
+        for name in symbol_names:
+            if (name in symbol_str):
+                return True
+        return False
+
+    def amend_testplan(self):
+        elf_path = os.path.join(self.build_dir, "zephyr", "zephyr.elf")
+        if(os.path.isfile(elf_path)):
+            logger.debug(f"zephyr.elf located {elf_path}")
+            symbol_str = self.get_elf_symbols(elf_path)
+        else:
+            # no elf file, cannot do symbol-based amending
+            logger.debug(f"zephyr.elf NOT located {elf_path}")
+            return
+
+        yaml_testsuite_name = self.instance.name.split(os.path.sep)[-1]
+        logger.debug(f"amending yaml test suite: {yaml_testsuite_name}")
+        intended_testcases = []
+        for testcase in self.instance.testcases:
+            # identifier is "yaml_testsuite.test_function" or just "yaml_testsuite"
+            identifier = testcase.name
+            if (identifier == yaml_testsuite_name):
+                # Sometimes twsiter add yaml test suite name to a test instance as a test case.
+                # Such test case has no real test function.
+                # Skip it to make stats right
+                logger.debug(f"skipping: {identifier}")
+                continue
+
+            test_func_name1 = f"test_{identifier.split('.')[-1]}"
+            test_func_name2 = f"{identifier.split('.')[-1]}"
+            # If the elf file exists and the test case function not in it,
+            # it should be an un-intended test function for this test instance build.
+            # If this is an old test plan and contains test cases collected at runtime
+            # by checking the log, such test cases may not have functions in elf.
+            # Also remove them here, which should be OK because they will still be added back at runtime.
+            if(not self.symbol_exists_in_elf(symbol_str, test_func_name1, test_func_name2)):
+                logger.debug(f"Unintended test case: {identifier}")
+                continue
+
+            intended_testcases.append(testcase)
+            logger.debug(f"Intended test case: {identifier}")
+
+        self.instance.testcases.clear()
+        self.instance.testcases.extend(intended_testcases)
+
+        pass
 
     def cleanup_artifacts(self, additional_keep=[]):
         logger.debug("Cleaning up {}".format(self.instance.build_dir))
